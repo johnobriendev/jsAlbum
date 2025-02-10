@@ -8,6 +8,7 @@ const MusicPlayer = () => {
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   // References to audio element and songs
   const audioRef = useRef(null);
@@ -54,6 +55,9 @@ const MusicPlayer = () => {
 
   // Helper function to format time
   const formatTime = (seconds) => {
+    if (!seconds || isNaN(seconds)) {
+      return songs[currentSongIndex].duration; 
+    }
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60);
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
@@ -62,6 +66,7 @@ const MusicPlayer = () => {
   // Effect to handle song changes
   useEffect(() => {
     if (audioRef.current) {
+      setIsLoading(true);
       audioRef.current.src = songs[currentSongIndex].src;
       if (isPlaying) {
         audioRef.current.play();
@@ -116,6 +121,11 @@ const MusicPlayer = () => {
     setIsPlaying(true);
   };
 
+  const handleMetadataLoaded = () => {
+    setIsLoading(false);
+    handleTimeUpdate();
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-800 md:bg-[url('/Yutah.jpg')] md:bg-cover md:bg-center md:bg-no-repeat">
       {/* Container for the player that's sized differently for mobile and desktop */}
@@ -143,7 +153,7 @@ const MusicPlayer = () => {
                 className="w-full h-1 bg-white/30 rounded-lg appearance-none cursor-pointer"
               />
               <span className="text-white min-w-[32px] text-xs">
-                {formatTime(duration)}
+                {isLoading ? songs[currentSongIndex].duration : formatTime(duration)}
               </span>
             </div>
 
@@ -183,7 +193,7 @@ const MusicPlayer = () => {
           ref={audioRef}
           onTimeUpdate={handleTimeUpdate}
           onEnded={playNext}
-          onLoadedMetadata={handleTimeUpdate}
+          onLoadedMetadata={handleMetadataLoaded}
         />
       </div>
     </div>
