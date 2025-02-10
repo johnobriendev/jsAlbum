@@ -117,79 +117,68 @@ const MusicPlayer = () => {
   };
 
   return (
-    <div 
-      className="min-h-screen bg-cover bg-center bg-no-repeat flex flex-col md:flex-row items-center justify-center p-4 gap-8 md:gap-72"
-      style={{ backgroundImage: 'url(/Yutah.jpg)' }}
-    >
-      <div className="w-full md:w-[400px] bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg p-8 backdrop-blur-sm">
-        <h1 className="text-3xl font-light text-white text-center mb-8">
-          Steve and John's Album
-        </h1>
-
-        {/* Song list */}
-        <div className="space-y-4 mb-8">
-          {songs.map((song, index) => (
-            <div
-              key={song.id}
-              onClick={() => handleSongSelect(index)}
-              className={`flex justify-between items-center cursor-pointer group 
-                ${currentSongIndex === index ? 'scale-105' : 'hover:scale-105'} 
-                transition-transform duration-200`}
-            >
-              <p className={`text-white text-lg font-light 
-                ${currentSongIndex === index ? 'font-medium' : ''}`}>
-                {song.title}
-              </p>
-              <p className="text-white text-lg font-light">{song.duration}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Progress bar */}
-        <div className="flex items-center justify-between gap-4 mb-8">
-          <span className="text-white min-w-[40px]">
-            {formatTime(currentTime)}
-          </span>
-          <input
-            type="range"
-            value={progress}
-            min={0}
-            max={duration || 100}
-            onChange={handleProgressChange}
-            className="w-full h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+    <div className="min-h-screen flex items-center justify-center bg-gray-800 md:bg-[url('/Yutah.jpg')] md:bg-cover md:bg-center md:bg-no-repeat">
+      {/* Container for the player that's sized differently for mobile and desktop */}
+      <div className="relative h-screen w-full md:h-[90vh] md:w-auto flex items-center justify-center">
+        {/* Container for the Steve and John image with proper mobile/desktop handling */}
+        <div className="relative h-[80vh] w-full md:h-full md:w-auto flex items-center justify-center overflow-hidden">
+          <img 
+            src="/stevejohn.jpeg" 
+            alt="Steve and John" 
+            className="h-full w-auto max-w-none object-contain md:object-cover md:rounded-lg"
           />
-          <span className="text-white min-w-[40px]">
-            {formatTime(duration)}
-          </span>
+          
+          {/* Controls overlay positioned consistently across viewport sizes */}
+          <div className="absolute top-6 left-0 right-0 px-4 md:px-6">
+            <div className="flex items-center justify-between gap-2 md:gap-3 mb-2">
+              <span className="text-white min-w-[32px] text-xs">
+                {formatTime(currentTime)}
+              </span>
+              <input
+                type="range"
+                value={progress}
+                min={0}
+                max={duration || 100}
+                onChange={handleProgressChange}
+                className="w-full h-1 bg-white/30 rounded-lg appearance-none cursor-pointer"
+              />
+              <span className="text-white min-w-[32px] text-xs">
+                {formatTime(duration)}
+              </span>
+            </div>
+
+            <div className="flex justify-center items-center gap-4">
+              <button onClick={playPrevious} className="text-white hover:scale-110 transition-transform">
+                <SkipBack size={20} />
+              </button>
+              <button onClick={togglePlayPause} className="text-white hover:scale-110 transition-transform">
+                {isPlaying ? <PauseCircle size={36} /> : <PlayCircle size={36} />}
+              </button>
+              <button onClick={playNext} className="text-white hover:scale-110 transition-transform">
+                <SkipForward size={20} />
+              </button>
+            </div>
+          </div>
+
+          {/* Track listing */}
+          <div className="absolute bottom-6 right-4 w-72 md:w-64">
+            {songs.map((song, index) => (
+              <div
+                key={song.id}
+                onClick={() => handleSongSelect(index)}
+                className={`flex justify-between items-center cursor-pointer group py-0.5
+                  ${currentSongIndex === index ? 'scale-105' : 'hover:scale-105'} 
+                  transition-transform duration-200`}
+              >
+                <p className={`text-black text-sm ${currentSongIndex === index ? 'font-medium' : 'font-light'}`}>
+                  {song.title}
+                </p>
+                <p className="text-black text-sm font-light ml-2">{song.duration}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Controls */}
-        <div className="flex justify-center items-center gap-8">
-          <button
-            onClick={playPrevious}
-            className="text-white hover:scale-110 transition-transform"
-          >
-            <SkipBack size={24} />
-          </button>
-          <button
-            onClick={togglePlayPause}
-            className="text-white hover:scale-110 transition-transform"
-          >
-            {isPlaying ? (
-              <PauseCircle size={48} />
-            ) : (
-              <PlayCircle size={48} />
-            )}
-          </button>
-          <button
-            onClick={playNext}
-            className="text-white hover:scale-110 transition-transform"
-          >
-            <SkipForward size={24} />
-          </button>
-        </div>
-
-        {/* Hidden audio element */}
         <audio
           ref={audioRef}
           onTimeUpdate={handleTimeUpdate}
@@ -197,15 +186,6 @@ const MusicPlayer = () => {
           onLoadedMetadata={handleTimeUpdate}
         />
       </div>
-      <div className="w-full max-w-2xl md:w-[500px]">
-        <img 
-          src="/stevejohn.png" 
-          alt="Steve and John" 
-          className="w-full h-full object-cover rounded-lg"
-        />
-      </div>
-
-
     </div>
   );
 };
