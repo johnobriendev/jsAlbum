@@ -117,8 +117,11 @@ const MusicPlayer = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg p-8 backdrop-blur-sm">
+    <div 
+      className="min-h-screen bg-cover bg-center bg-no-repeat flex flex-col md:flex-row items-center justify-center p-4 gap-8 md:gap-72"
+      style={{ backgroundImage: 'url(/Yutah.jpg)' }}
+    >
+      <div className="w-full md:w-[400px] bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg p-8 backdrop-blur-sm">
         <h1 className="text-3xl font-light text-white text-center mb-8">
           Steve and John's Album
         </h1>
@@ -194,6 +197,15 @@ const MusicPlayer = () => {
           onLoadedMetadata={handleTimeUpdate}
         />
       </div>
+      <div className="w-full max-w-2xl md:w-[500px]">
+        <img 
+          src="/stevejohn.png" 
+          alt="Steve and John" 
+          className="w-full h-full object-cover rounded-lg"
+        />
+      </div>
+
+
     </div>
   );
 };
