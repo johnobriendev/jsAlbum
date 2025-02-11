@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { PlayCircle, PauseCircle, SkipBack, SkipForward } from 'lucide-react';
+import { PlayCircle, PauseCircle, SkipBack, SkipForward, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const MusicPlayer = () => {
   // State for managing the current song and playback
@@ -9,6 +9,8 @@ const MusicPlayer = () => {
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [activeView, setActiveView] = useState('A'); // 'A' or 'B'
 
   // References to audio element and songs
   const audioRef = useRef(null);
@@ -53,6 +55,26 @@ const MusicPlayer = () => {
     }
   ];
 
+  const aSideSongs = songs.slice(0, 3);
+  const bSideSongs = songs.slice(3);
+
+  // Effect to handle automatic side switching when playing through songs
+  useEffect(() => {
+    if (currentSongIndex < 3) {
+      setActiveView('A');
+    } else {
+      setActiveView('B');
+    }
+  }, [currentSongIndex]);
+
+  // Handle manual side switching
+  const switchSide = (side) => {
+    setIsTransitioning(true);
+    setActiveView(side);
+    setTimeout(() => setIsTransitioning(false), 300);
+  };
+
+
   // Helper function to format time
   const formatTime = (seconds) => {
     if (!seconds || isNaN(seconds)) {
@@ -87,14 +109,34 @@ const MusicPlayer = () => {
   };
 
   // Handle next/previous
+  // const playNext = () => {
+  //   setCurrentSongIndex((prevIndex) => (prevIndex + 1) % songs.length);
+  // };
+
+  // const playPrevious = () => {
+  //   setCurrentSongIndex((prevIndex) => 
+  //     prevIndex === 0 ? songs.length - 1 : prevIndex - 1
+  //   );
+  // };
   const playNext = () => {
-    setCurrentSongIndex((prevIndex) => (prevIndex + 1) % songs.length);
+    setCurrentSongIndex((prevIndex) => {
+      const nextIndex = (prevIndex + 1) % songs.length;
+      if (prevIndex === 2 && nextIndex === 3) {
+        setIsTransitioning(true);
+      }
+      return nextIndex;
+    });
   };
 
+  // Modified playPrevious to handle side transitions
   const playPrevious = () => {
-    setCurrentSongIndex((prevIndex) => 
-      prevIndex === 0 ? songs.length - 1 : prevIndex - 1
-    );
+    setCurrentSongIndex((prevIndex) => {
+      const nextIndex = prevIndex === 0 ? songs.length - 1 : prevIndex - 1;
+      if (prevIndex === 3 && nextIndex === 2) {
+        setIsTransitioning(true);
+      }
+      return nextIndex;
+    });
   };
 
   // Handle progress bar changes
@@ -126,78 +168,191 @@ const MusicPlayer = () => {
     handleTimeUpdate();
   };
 
+
+  const renderPlaybackControls = () => (
+    <div className="absolute top-6 left-0 right-0 px-4 md:px-6">  
+      <div className="flex items-center justify-between gap-2 md:gap-3 mb-2">
+        <span className="text-white min-w-[32px] text-xs">
+          {formatTime(currentTime)}
+        </span>
+        <input
+          type="range"
+          value={progress}
+          min={0}
+          max={duration || 100}
+          onChange={handleProgressChange}
+          className="w-full h-1 bg-white/30 rounded-lg appearance-none cursor-pointer"
+        />
+        <span className="text-white min-w-[32px] text-xs">
+          {isLoading ? songs[currentSongIndex].duration : formatTime(duration)}
+        </span>
+      </div>
+  
+      <div className="flex justify-center items-center gap-4">
+        <button onClick={playPrevious} className="text-white hover:scale-110 transition-transform">
+          <SkipBack size={20} />
+        </button>
+        <button onClick={togglePlayPause} className="text-white hover:scale-110 transition-transform">
+          {isPlaying ? <PauseCircle size={36} /> : <PlayCircle size={36} />}
+        </button>
+        <button onClick={playNext} className="text-white hover:scale-110 transition-transform">
+          <SkipForward size={20} />
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderSongList = (songs, startIndex) => (
+    <div className="absolute bottom-6 right-4 w-72 md:w-64">  
+      {songs.map((song, index) => (
+        <div
+          key={song.id}
+          onClick={() => handleSongSelect(startIndex + index)}
+          className={`flex justify-between items-center cursor-pointer group py-0.5
+            ${currentSongIndex === startIndex + index ? 'scale-105' : 'hover:scale-105'} 
+            transition-transform duration-200`}
+        >
+          <p className={`text-black text-sm ${currentSongIndex === startIndex + index ? 'font-medium' : 'font-light'}`}>
+            {song.title}
+          </p>
+          <p className="text-black text-sm font-light ml-2">{song.duration}</p>
+        </div>
+      ))}
+    </div>
+  );
+
+
+
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-800 md:bg-[url('/Yutah.jpg')] md:bg-cover md:bg-center md:bg-no-repeat">
-      {/* Container for the player that's sized differently for mobile and desktop */}
-      <div className="relative h-screen w-full md:h-[90vh] md:w-auto flex items-center justify-center">
-        {/* Container for the Steve and John image with proper mobile/desktop handling */}
-        <div className="relative h-[80vh] w-full md:h-full md:w-auto flex items-center justify-center overflow-hidden">
+    <div className="min-h-screen bg-gray-800 md:bg-[url('/Yutah.jpg')] md:bg-cover md:bg-center md:bg-no-repeat">
+      {/* Mobile Layout */}
+      <div className="md:hidden flex flex-col">
+        {/* Title for mobile */}
+        <div className="w-full py-8 px-4 text-center">
+          <h1 className="text-4xl font-bold text-white mb-2">Steve and John</h1>
+        </div>
+
+        {/* A Side Section */}
+        <div className="relative h-screen w-full">
           <img 
             src="/stevejohn.jpeg" 
-            alt="Steve and John" 
-            className="h-full w-auto max-w-none object-contain md:object-cover md:rounded-lg"
+            alt="Steve and John A Side" 
+            className="h-full w-full object-contain"
           />
-          
-          {/* Controls overlay positioned consistently across viewport sizes */}
-          <div className="absolute top-6 left-0 right-0 px-4 md:px-6">
-            <div className="flex items-center justify-between gap-2 md:gap-3 mb-2">
-              <span className="text-white min-w-[32px] text-xs">
-                {formatTime(currentTime)}
-              </span>
-              <input
-                type="range"
-                value={progress}
-                min={0}
-                max={duration || 100}
-                onChange={handleProgressChange}
-                className="w-full h-1 bg-white/30 rounded-lg appearance-none cursor-pointer"
-              />
-              <span className="text-white min-w-[32px] text-xs">
-                {isLoading ? songs[currentSongIndex].duration : formatTime(duration)}
-              </span>
-            </div>
-
-            <div className="flex justify-center items-center gap-4">
-              <button onClick={playPrevious} className="text-white hover:scale-110 transition-transform">
-                <SkipBack size={20} />
-              </button>
-              <button onClick={togglePlayPause} className="text-white hover:scale-110 transition-transform">
-                {isPlaying ? <PauseCircle size={36} /> : <PlayCircle size={36} />}
-              </button>
-              <button onClick={playNext} className="text-white hover:scale-110 transition-transform">
-                <SkipForward size={20} />
-              </button>
-            </div>
-          </div>
-
-          {/* Track listing */}
-          <div className="absolute bottom-6 right-4 w-72 md:w-64">
-            {songs.map((song, index) => (
-              <div
-                key={song.id}
-                onClick={() => handleSongSelect(index)}
-                className={`flex justify-between items-center cursor-pointer group py-0.5
-                  ${currentSongIndex === index ? 'scale-105' : 'hover:scale-105'} 
-                  transition-transform duration-200`}
-              >
-                <p className={`text-black text-sm ${currentSongIndex === index ? 'font-medium' : 'font-light'}`}>
-                  {song.title}
-                </p>
-                <p className="text-black text-sm font-light ml-2">{song.duration}</p>
-              </div>
-            ))}
+          {/* Overlay for A Side */}
+          <div className="absolute inset-0">  {/* This creates the overlay canvas */}
+            {currentSongIndex < 3 && renderPlaybackControls()}
+            {renderSongList(aSideSongs, 0)}
+            <span className="absolute bottom-6 left-8 text-black text-lg font-medium">A Side</span>
           </div>
         </div>
 
-        <audio
-          ref={audioRef}
-          onTimeUpdate={handleTimeUpdate}
-          onEnded={playNext}
-          onLoadedMetadata={handleMetadataLoaded}
-        />
+        {/* B Side Section */}
+        <div className="relative h-screen w-full">
+          <img 
+            src="/johnsteve2.png" 
+            alt="Steve and John B Side" 
+            className="h-full w-full object-contain"
+          />
+          {/* Overlay for B Side */}
+          <div className="absolute inset-0">
+            {currentSongIndex >= 3 && renderPlaybackControls()}
+            {renderSongList(bSideSongs, 3)}
+            <span className="absolute bottom-6 left-8 text-black text-lg font-medium">B Side</span>
+          </div>
+        </div>
+
+        {/* Personnel section for mobile */}
+        <div className="w-full py-8 px-4 text-white">
+          <h2 className="text-2xl font-semibold mb-4">Personnel</h2>
+          <p className="text-lg mb-2">Steve Ippolitto: drums and cymbals</p>
+          <p className="text-lg">John O'Brien: guitar</p>
+        </div>
       </div>
+
+      {/* Desktop Layout */}
+      <div className="hidden md:flex min-h-screen items-center justify-center px-12">
+        {/* Title and Personnel section */}
+        <div className="w-96 pr-12">
+          <h1 className="text-5xl font-bold text-white mb-8">Steve and John</h1>
+          
+          <div className="text-white">
+            <h2 className="text-2xl font-semibold mb-4">Personnel</h2>
+            <p className="text-lg mb-2">Steve Ippolitto: drums and cymbals</p>
+            <p className="text-lg">John O'Brien: guitar</p>
+          </div>
+        </div>
+
+        {/* Carousel section */}
+        <div className="relative h-[90vh] w-auto flex items-center justify-center overflow-hidden">
+          {/* Carousel navigation buttons */}
+          <button 
+            onClick={() => switchSide('A')}
+            className={`absolute left-4 z-10 text-white/80 hover:text-white transition-colors ${
+              activeView === 'A' ? 'hidden' : ''
+            }`}
+          >
+            <ChevronLeft size={40} />
+          </button>
+          <button 
+            onClick={() => switchSide('B')}
+            className={`absolute right-4 z-10 text-white/80 hover:text-white transition-colors ${
+              activeView === 'B' ? 'hidden' : ''
+            }`}
+          >
+            <ChevronRight size={40} />
+          </button>
+
+          {/* Carousel container */}
+          <div 
+            className={`relative transition-opacity duration-300 ease-in-out ${
+              isTransitioning ? 'opacity-0' : 'opacity-100'
+            }`}
+          >
+            {activeView === 'A' ? (
+              <div className="relative">
+                <img 
+                  src="/stevejohn.jpeg" 
+                  alt="Steve and John A Side" 
+                  className="h-[90vh] w-auto object-cover rounded-lg"
+                />
+                <div className="absolute inset-0 flex flex-col">
+                  {currentSongIndex < 3 && renderPlaybackControls()}
+                  {renderSongList(aSideSongs, 0)}
+                  <span className="absolute bottom-6 left-8 text-black text-lg font-medium">A Side</span>
+                </div>
+              </div>
+            ) : (
+              <div className="relative">
+                <img 
+                  src="/johnsteve2.png" 
+                  alt="Steve and John B Side" 
+                  className="h-[90vh] w-auto object-cover rounded-lg"
+                />
+                <div className="absolute inset-0 flex flex-col">
+                  {currentSongIndex >= 3 && renderPlaybackControls()}
+                  {renderSongList(bSideSongs, 3)}
+                  <span className="absolute bottom-6 left-8 text-black text-lg font-medium">B Side</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <audio
+        ref={audioRef}
+        onTimeUpdate={handleTimeUpdate}
+        onEnded={playNext}
+        onLoadedMetadata={handleMetadataLoaded}
+      />
     </div>
   );
 };
 
 export default MusicPlayer;
+
+
+
+
