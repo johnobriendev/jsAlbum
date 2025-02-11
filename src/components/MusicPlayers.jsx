@@ -160,7 +160,7 @@ const MusicPlayer = () => {
 
 
   const renderPlaybackControls = () => (
-    <div className="absolute left-0 right-0 md:top-6 top-1/4 px-4 md:px-6">  
+    <div className="absolute left-0 right-0 md:top-6 top-6 px-4 md:px-6">  
       <div className="flex items-center justify-between gap-2 md:gap-3 mb-2">
         <span className="text-white min-w-[32px] text-xs">
           {formatTime(currentTime)}
@@ -193,7 +193,7 @@ const MusicPlayer = () => {
   );
 
   const renderSongList = (songs, startIndex) => (
-    <div className="absolute bottom-56 md:bottom-6 right-4 w-72 md:w-64">  
+    <div className="absolute bottom-6 md:bottom-6 right-4 w-72 md:w-64">  
       {songs.map((song, index) => (
         <div
           key={song.id}
@@ -211,54 +211,82 @@ const MusicPlayer = () => {
     </div>
   );
 
+  const renderCarouselContent = (isMobile = false) => (
+    <div className={`relative transition-opacity duration-300 ease-in-out ${
+      isTransitioning ? 'opacity-0' : 'opacity-100'
+    }`}>
+      {activeView === 'A' ? (
+        <div className="relative">
+          <img 
+            src="/stevejohn.jpeg" 
+            alt="Steve and John A Side" 
+            className={`${isMobile ? 'h-[70vh]' : 'h-[90vh]'} w-auto object-cover rounded-lg`}
+          />
+          <div className="absolute inset-0 flex flex-col">
+            {currentSongIndex < 3 && renderPlaybackControls()}
+            {renderSongList(aSideSongs, 0)}
+            <span className="absolute bottom-6 left-8 md:left-12 text-black text-lg font-medium">A Side</span>
+          </div>
+        </div>
+      ) : (
+        <div className="relative">
+          <img 
+            src="/johnsteve2.png" 
+            alt="Steve and John B Side" 
+            className={`${isMobile ? 'h-[70vh]' : 'h-[90vh]'} w-auto object-cover rounded-lg`}
+          />
+          <div className="absolute inset-0 flex flex-col">
+            {currentSongIndex >= 3 && renderPlaybackControls()}
+            {renderSongList(bSideSongs, 3)}
+            <span className="absolute bottom-6 left-8 text-black text-lg font-medium">B Side</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
 
 
 
   return (
     <div className="min-h-screen bg-gray-800 md:bg-[url('/Yutah.jpg')] md:bg-cover md:bg-center md:bg-no-repeat">
       {/* Mobile Layout */}
-      <div className="md:hidden">
+      <div className="md:hidden flex flex-col">
         {/* Title for mobile */}
         <div className="w-full pt-8 px-4 text-center">
           <h1 className="text-4xl font-thin text-white">Steve and John</h1>
         </div>
 
-        {/* A Side Section */}
-        <div className="relative h-screen w-full">
-          <img 
-            src="/stevejohn.jpeg" 
-            alt="Steve and John A Side" 
-            className="h-full w-full object-contain"
-          />
-          {/* Overlay for A Side */}
-          <div className="absolute inset-0 flex flex-col">  {/* This creates the overlay canvas */}
-            {currentSongIndex < 3 && renderPlaybackControls()}
-            {renderSongList(aSideSongs, 0)}
-            <span className="absolute bottom-56 left-8 text-black text-lg font-medium">A Side</span>
-          </div>
-        </div>
+        {/* Mobile Carousel Container */}
+        <div className="relative w-full flex items-center justify-center mt-4">
+          {/* Mobile Carousel Navigation */}
+          <button 
+            onClick={() => switchSide('A')}
+            className={`absolute left-4 z-10 text-white hover:text-white/80 transition-colors ${
+              activeView === 'A' ? 'hidden' : ''
+            }`}
+          >
+            <ChevronLeft size={32} />
+          </button>
+          <button 
+            onClick={() => switchSide('B')}
+            className={`absolute right-4 z-10 text-white hover:text-white/80 transition-colors ${
+              activeView === 'B' ? 'hidden' : ''
+            }`}
+          >
+            <ChevronRight size={32} />
+          </button>
 
-        {/* B Side Section */}
-        <div className="relative h-screen w-full">
-          <img 
-            src="/johnsteve2.png" 
-            alt="Steve and John B Side" 
-            className="h-full w-full object-contain"
-          />
-          {/* Overlay for B Side */}
-          <div className="absolute inset-0 flex flex-col">
-            {currentSongIndex >= 3 && renderPlaybackControls()}
-            {renderSongList(bSideSongs, 3)}
-            <span className="absolute bottom-56 left-8 text-black text-lg font-medium">B Side</span>
-          </div>
+          {/* Mobile Carousel Content */}
+          {renderCarouselContent(true)}
         </div>
 
         {/* Personnel section for mobile */}
-        <div className="w-full py-8 px-4 text-white ">
+        <div className="w-full py-8 px-4 text-white">
           <h2 className="text-2xl font-thin mb-4">Personnel</h2>
           <p className="text-lg mb-2 font-thin">Steve Ippolitto: drums</p>
           <p className="text-lg font-thin mb-2">John O'Brien: guitar</p>
-          <p className="text-lg font-thin mb-2">Dante Villagomez: mixing</p>
+          <p className="text-lg font-thin">Dante Villagomez: mixing</p>
         </div>
       </div>
 
@@ -270,17 +298,17 @@ const MusicPlayer = () => {
           
           <div className="text-white">
             <h2 className="text-2xl font-semibold mb-4">Personnel</h2>
-            <p className="text-lg mb-2">Steve Ippolitto: drums and cymbals</p>
+            <p className="text-lg mb-2">Steve Ippolitto: drums</p>
             <p className="text-lg">John O'Brien: guitar</p>
           </div>
         </div>
 
-        {/* Carousel section */}
+        {/* Desktop Carousel section */}
         <div className="relative h-[90vh] w-auto flex items-center justify-center overflow-hidden">
-          {/* Carousel navigation buttons */}
+          {/* Desktop Carousel Navigation */}
           <button 
             onClick={() => switchSide('A')}
-            className={`absolute left-4 z-10 text-white/80 hover:text-white transition-colors ${
+            className={`absolute left-4 z-10 text-white hover:text-white/80 transition-colors ${
               activeView === 'A' ? 'hidden' : ''
             }`}
           >
@@ -288,47 +316,15 @@ const MusicPlayer = () => {
           </button>
           <button 
             onClick={() => switchSide('B')}
-            className={`absolute right-4 z-10 text-white/80 hover:text-white transition-colors ${
+            className={`absolute right-4 z-10 text-white hover:text-white/80 transition-colors ${
               activeView === 'B' ? 'hidden' : ''
             }`}
           >
             <ChevronRight size={40} />
           </button>
 
-          {/* Carousel container */}
-          <div 
-            className={`relative transition-opacity duration-300 ease-in-out ${
-              isTransitioning ? 'opacity-0' : 'opacity-100'
-            }`}
-          >
-            {activeView === 'A' ? (
-              <div className="relative">
-                <img 
-                  src="/stevejohn.jpeg" 
-                  alt="Steve and John A Side" 
-                  className="h-[90vh] w-auto object-cover rounded-lg"
-                />
-                <div className="absolute inset-0 flex flex-col">
-                  {currentSongIndex < 3 && renderPlaybackControls()}
-                  {renderSongList(aSideSongs, 0)}
-                  <span className="absolute bottom-6 left-12 text-black text-lg font-medium">A Side</span>
-                </div>
-              </div>
-            ) : (
-              <div className="relative">
-                <img 
-                  src="/johnsteve2.png" 
-                  alt="Steve and John B Side" 
-                  className="h-[90vh] w-auto object-cover rounded-lg"
-                />
-                <div className="absolute inset-0 flex flex-col">
-                  {currentSongIndex >= 3 && renderPlaybackControls()}
-                  {renderSongList(bSideSongs, 3)}
-                  <span className="absolute bottom-6 left-8 text-black text-lg font-medium">B Side</span>
-                </div>
-              </div>
-            )}
-          </div>
+          {/* Desktop Carousel Content */}
+          {renderCarouselContent(false)}
         </div>
       </div>
 
