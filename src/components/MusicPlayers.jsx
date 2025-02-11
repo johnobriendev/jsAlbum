@@ -235,7 +235,7 @@ const MusicPlayer = () => {
           <div className="absolute inset-0 flex flex-col">
             {renderPlaybackControls()}
             {renderSongList(aSideSongs, 0)}
-            <span className="absolute bottom-6 left-8 md:left-12 text-black text-lg font-medium">A Side</span>
+            <span className="absolute bottom-6 left-8 md:left-16 text-black text-lg font-medium">A Side</span>
           </div>
         </div>
       ) : (
