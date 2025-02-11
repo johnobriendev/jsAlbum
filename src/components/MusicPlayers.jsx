@@ -108,16 +108,6 @@ const MusicPlayer = () => {
     }
   };
 
-  // Handle next/previous
-  // const playNext = () => {
-  //   setCurrentSongIndex((prevIndex) => (prevIndex + 1) % songs.length);
-  // };
-
-  // const playPrevious = () => {
-  //   setCurrentSongIndex((prevIndex) => 
-  //     prevIndex === 0 ? songs.length - 1 : prevIndex - 1
-  //   );
-  // };
   const playNext = () => {
     setCurrentSongIndex((prevIndex) => {
       const nextIndex = (prevIndex + 1) % songs.length;
@@ -170,7 +160,7 @@ const MusicPlayer = () => {
 
 
   const renderPlaybackControls = () => (
-    <div className="absolute top-6 left-0 right-0 px-4 md:px-6">  
+    <div className="absolute left-0 right-0 md:top-6 top-1/4 px-4 md:px-6">  
       <div className="flex items-center justify-between gap-2 md:gap-3 mb-2">
         <span className="text-white min-w-[32px] text-xs">
           {formatTime(currentTime)}
@@ -203,7 +193,7 @@ const MusicPlayer = () => {
   );
 
   const renderSongList = (songs, startIndex) => (
-    <div className="absolute bottom-6 right-4 w-72 md:w-64">  
+    <div className="absolute bottom-56 md:bottom-6 right-4 w-72 md:w-64">  
       {songs.map((song, index) => (
         <div
           key={song.id}
@@ -227,10 +217,10 @@ const MusicPlayer = () => {
   return (
     <div className="min-h-screen bg-gray-800 md:bg-[url('/Yutah.jpg')] md:bg-cover md:bg-center md:bg-no-repeat">
       {/* Mobile Layout */}
-      <div className="md:hidden flex flex-col">
+      <div className="md:hidden">
         {/* Title for mobile */}
-        <div className="w-full py-8 px-4 text-center">
-          <h1 className="text-4xl font-bold text-white mb-2">Steve and John</h1>
+        <div className="w-full pt-8 px-4 text-center">
+          <h1 className="text-4xl font-thin text-white">Steve and John</h1>
         </div>
 
         {/* A Side Section */}
@@ -241,10 +231,10 @@ const MusicPlayer = () => {
             className="h-full w-full object-contain"
           />
           {/* Overlay for A Side */}
-          <div className="absolute inset-0">  {/* This creates the overlay canvas */}
+          <div className="absolute inset-0 flex flex-col">  {/* This creates the overlay canvas */}
             {currentSongIndex < 3 && renderPlaybackControls()}
             {renderSongList(aSideSongs, 0)}
-            <span className="absolute bottom-6 left-8 text-black text-lg font-medium">A Side</span>
+            <span className="absolute bottom-56 left-8 text-black text-lg font-medium">A Side</span>
           </div>
         </div>
 
@@ -256,18 +246,19 @@ const MusicPlayer = () => {
             className="h-full w-full object-contain"
           />
           {/* Overlay for B Side */}
-          <div className="absolute inset-0">
+          <div className="absolute inset-0 flex flex-col">
             {currentSongIndex >= 3 && renderPlaybackControls()}
             {renderSongList(bSideSongs, 3)}
-            <span className="absolute bottom-6 left-8 text-black text-lg font-medium">B Side</span>
+            <span className="absolute bottom-56 left-8 text-black text-lg font-medium">B Side</span>
           </div>
         </div>
 
         {/* Personnel section for mobile */}
-        <div className="w-full py-8 px-4 text-white">
-          <h2 className="text-2xl font-semibold mb-4">Personnel</h2>
-          <p className="text-lg mb-2">Steve Ippolitto: drums and cymbals</p>
-          <p className="text-lg">John O'Brien: guitar</p>
+        <div className="w-full py-8 px-4 text-white ">
+          <h2 className="text-2xl font-thin mb-4">Personnel</h2>
+          <p className="text-lg mb-2 font-thin">Steve Ippolitto: drums</p>
+          <p className="text-lg font-thin mb-2">John O'Brien: guitar</p>
+          <p className="text-lg font-thin mb-2">Dante Villagomez: mixing</p>
         </div>
       </div>
 
@@ -320,7 +311,7 @@ const MusicPlayer = () => {
                 <div className="absolute inset-0 flex flex-col">
                   {currentSongIndex < 3 && renderPlaybackControls()}
                   {renderSongList(aSideSongs, 0)}
-                  <span className="absolute bottom-6 left-8 text-black text-lg font-medium">A Side</span>
+                  <span className="absolute bottom-6 left-12 text-black text-lg font-medium">A Side</span>
                 </div>
               </div>
             ) : (
