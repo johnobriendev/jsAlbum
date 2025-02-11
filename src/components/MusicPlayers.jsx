@@ -205,7 +205,7 @@ const MusicPlayer = () => {
   );
 
   const renderSongList = (songs, startIndex) => (
-    <div className="absolute bottom-6 md:bottom-6 right-4 w-72 md:w-64">  
+    <div className="absolute bottom-6 md:bottom-6 right-4 w-56 md:w-64">  
       {songs.map((song, index) => (
         <div
           key={song.id}
@@ -228,7 +228,7 @@ const MusicPlayer = () => {
       {activeView === 'A' ? (
         <div className="relative">
           <img 
-            src="/stevejohn.jpeg" 
+            src="/stevejohn.png" 
             alt="Steve and John A Side" 
             className={`${isMobile ? 'h-[70vh]' : 'h-[90vh]'} w-auto object-cover rounded-lg`}
           />
