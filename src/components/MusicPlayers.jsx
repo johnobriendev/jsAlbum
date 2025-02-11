@@ -9,7 +9,7 @@ const MusicPlayer = () => {
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  //const [isTransitioning, setIsTransitioning] = useState(false);
   const [activeView, setActiveView] = useState('A'); // 'A' or 'B'
 
   // References to audio element and songs
@@ -69,9 +69,9 @@ const MusicPlayer = () => {
 
   // Handle manual side switching
   const switchSide = (side) => {
-    setIsTransitioning(true);
+    //setIsTransitioning(true);
     setActiveView(side);
-    setTimeout(() => setIsTransitioning(false), 300);
+    //setTimeout(() => setIsTransitioning(false), 300);
   };
 
 
@@ -108,26 +108,38 @@ const MusicPlayer = () => {
     }
   };
 
+  // const playNext = () => {
+  //   setCurrentSongIndex((prevIndex) => {
+  //     const nextIndex = (prevIndex + 1) % songs.length;
+  //     if (prevIndex === 2 && nextIndex === 3) {
+  //       setIsTransitioning(true);
+  //     }
+  //     return nextIndex;
+  //   });
+  // };
+
+  // // Modified playPrevious to handle side transitions
+  // const playPrevious = () => {
+  //   setCurrentSongIndex((prevIndex) => {
+  //     const nextIndex = prevIndex === 0 ? songs.length - 1 : prevIndex - 1;
+  //     if (prevIndex === 3 && nextIndex === 2) {
+  //       setIsTransitioning(true);
+  //     }
+  //     return nextIndex;
+  //   });
+  // };
+
+  // Simplified playback controls
   const playNext = () => {
-    setCurrentSongIndex((prevIndex) => {
-      const nextIndex = (prevIndex + 1) % songs.length;
-      if (prevIndex === 2 && nextIndex === 3) {
-        setIsTransitioning(true);
-      }
-      return nextIndex;
-    });
+    setCurrentSongIndex((prevIndex) => (prevIndex + 1) % songs.length);
   };
 
-  // Modified playPrevious to handle side transitions
   const playPrevious = () => {
-    setCurrentSongIndex((prevIndex) => {
-      const nextIndex = prevIndex === 0 ? songs.length - 1 : prevIndex - 1;
-      if (prevIndex === 3 && nextIndex === 2) {
-        setIsTransitioning(true);
-      }
-      return nextIndex;
-    });
+    setCurrentSongIndex((prevIndex) => 
+      prevIndex === 0 ? songs.length - 1 : prevIndex - 1
+    );
   };
+
 
   // Handle progress bar changes
   const handleProgressChange = (e) => {
@@ -212,9 +224,7 @@ const MusicPlayer = () => {
   );
 
   const renderCarouselContent = (isMobile = false) => (
-    <div className={`relative transition-opacity duration-300 ease-in-out ${
-      isTransitioning ? 'opacity-0' : 'opacity-100'
-    }`}>
+    <div className='relative'>
       {activeView === 'A' ? (
         <div className="relative">
           <img 
@@ -223,7 +233,7 @@ const MusicPlayer = () => {
             className={`${isMobile ? 'h-[70vh]' : 'h-[90vh]'} w-auto object-cover rounded-lg`}
           />
           <div className="absolute inset-0 flex flex-col">
-            {currentSongIndex < 3 && renderPlaybackControls()}
+            {renderPlaybackControls()}
             {renderSongList(aSideSongs, 0)}
             <span className="absolute bottom-6 left-8 md:left-12 text-black text-lg font-medium">A Side</span>
           </div>
@@ -236,7 +246,7 @@ const MusicPlayer = () => {
             className={`${isMobile ? 'h-[70vh]' : 'h-[90vh]'} w-auto object-cover rounded-lg`}
           />
           <div className="absolute inset-0 flex flex-col">
-            {currentSongIndex >= 3 && renderPlaybackControls()}
+            {renderPlaybackControls()}
             {renderSongList(bSideSongs, 3)}
             <span className="absolute bottom-6 left-8 text-black text-lg font-medium">B Side</span>
           </div>
@@ -284,7 +294,7 @@ const MusicPlayer = () => {
         {/* Personnel section for mobile */}
         <div className="w-full py-8 px-4 text-white">
           <h2 className="text-2xl font-thin mb-4">Personnel</h2>
-          <p className="text-lg mb-2 font-thin">Steve Ippolitto: drums</p>
+          <p className="text-lg mb-2 font-thin">Steve Ippolito: drums</p>
           <p className="text-lg font-thin mb-2">John O'Brien: guitar</p>
           <p className="text-lg font-thin">Dante Villagomez: mixing</p>
         </div>
@@ -293,13 +303,15 @@ const MusicPlayer = () => {
       {/* Desktop Layout */}
       <div className="hidden md:flex min-h-screen items-center justify-center px-12">
         {/* Title and Personnel section */}
-        <div className="w-96 pr-12">
-          <h1 className="text-5xl font-bold text-white mb-8">Steve and John</h1>
+        <div className="w-96 pr-12 pb-12">
+          <h1 className="text-5xl font-thin text-white mb-8">Steve and John</h1>
           
           <div className="text-white">
-            <h2 className="text-2xl font-semibold mb-4">Personnel</h2>
-            <p className="text-lg mb-2">Steve Ippolitto: drums</p>
-            <p className="text-lg">John O'Brien: guitar</p>
+            <h2 className="text-2xl font-thin mb-4">Personnel</h2>
+            <p className="text-lg mb-2 font-thin">Steve Ippolito: drums</p>
+            <p className="text-lg mb-2 font-thin">John O'Brien: guitar</p>
+            <p className="text-lg font-thin">Dante Villagomez: mixing</p>
+
           </div>
         </div>
 
